@@ -33,10 +33,7 @@ internal static class A2AAgentClient
         var resolvedCard = await cardResolver.GetAgentCardAsync(cancellationToken).ConfigureAwait(false);
 
         // Get AIAgent directly using MS Agent Framework A2A extension
-        // Note: The extension method doesn't support CancellationToken
-#pragma warning disable CA2016, MA0040 // Forward the CancellationToken parameter
-        var agent = await cardResolver.GetAIAgentAsync().ConfigureAwait(false);
-#pragma warning restore CA2016, MA0040
+        var agent = await cardResolver.GetAIAgentAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
 
         return (agent, resolvedCard);
     }

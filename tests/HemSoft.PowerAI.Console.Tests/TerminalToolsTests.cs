@@ -63,7 +63,7 @@ public sealed class TerminalToolsTests
     public void ExecuteWithWorkingDirectoryExecutesInDirectory()
     {
         var tempDir = Path.GetTempPath();
-        var result = TerminalTools.Terminal("Get-Location", tempDir);
+        var result = TerminalTools.Terminal(OperatingSystem.IsWindows() ? "Get-Location" : "pwd", tempDir);
 
         Assert.Contains("Exit: 0", result, StringComparison.Ordinal);
     }
@@ -145,7 +145,7 @@ public sealed class TerminalToolsTests
     public void ExecuteBatchWithWorkingDirectoryExecutesInDirectory()
     {
         var tempDir = Path.GetTempPath();
-        var result = TerminalTools.ExecuteBatch("Get-Location", tempDir);
+        var result = TerminalTools.ExecuteBatch(OperatingSystem.IsWindows() ? "Get-Location" : "pwd", tempDir);
 
         Assert.Contains("Batch complete", result, StringComparison.Ordinal);
     }

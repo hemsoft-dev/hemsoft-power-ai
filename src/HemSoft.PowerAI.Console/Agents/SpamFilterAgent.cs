@@ -100,6 +100,12 @@ internal sealed partial class SpamFilterAgent : IDisposable
         Stop = 1,
     }
 
+    [GeneratedRegex(
+        @"BATCH_STATS:\s*processed\s*=\s*(?<processed>\d+)\s*,\s*junked\s*=\s*(?<junked>\d+)\s*,\s*candidates\s*=\s*(?<candidates>\d+)",
+        RegexOptions.IgnoreCase | RegexOptions.ExplicitCapture,
+        matchTimeoutMilliseconds: 1000)]
+    private static partial Regex BatchStatsRegex { get; }
+
     /// <summary>
     /// Runs the spam filtering workflow.
     /// </summary>
@@ -244,7 +250,7 @@ internal sealed partial class SpamFilterAgent : IDisposable
             return result;
         }
 
-        var statsMatch = BatchStatsRegex().Match(responseText);
+        var statsMatch = BatchStatsRegex.Match(responseText);
 
         if (statsMatch.Success)
         {
@@ -268,10 +274,10 @@ internal sealed partial class SpamFilterAgent : IDisposable
 
     private static int ExtractCountFromPattern(string text, string pattern)
     {
-        var match = System.Text.RegularExpressions.Regex.Match(
+        var match = Regex.Match(
             text,
             pattern,
-            System.Text.RegularExpressions.RegexOptions.ExplicitCapture,
+            RegexOptions.ExplicitCapture,
             TimeSpan.FromSeconds(1));
         if (match.Success)
         {
@@ -334,12 +340,6 @@ internal sealed partial class SpamFilterAgent : IDisposable
 
         return (chatClient, null);
     }
-
-    [GeneratedRegex(
-        @"BATCH_STATS:\s*processed\s*=\s*(?<processed>\d+)\s*,\s*junked\s*=\s*(?<junked>\d+)\s*,\s*candidates\s*=\s*(?<candidates>\d+)",
-        RegexOptions.IgnoreCase | RegexOptions.ExplicitCapture,
-        matchTimeoutMilliseconds: 1000)]
-    private static partial Regex BatchStatsRegex();
 
     private async Task<BatchResult> ProcessInboxBatchAsync(AIAgent agent, int batchSize, CancellationToken cancellationToken)
     {

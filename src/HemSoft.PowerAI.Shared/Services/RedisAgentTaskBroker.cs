@@ -205,6 +205,15 @@ public sealed class RedisAgentTaskBroker : IAgentTaskBroker, IAsyncDisposable
         await this.connection.DisposeAsync().ConfigureAwait(false);
     }
 
+    /// <summary>
+    /// Creates a multiplexer-owned queue registration independently of its cancellable reader lifetime.
+    /// Callers must finish reading and unsubscribe their queue before returning.
+    /// </summary>
+    /// <param name="channel">The channel to register.</param>
+    /// <returns>The queue owning this subscription.</returns>
+    private Task<ChannelMessageQueue> SubscribeChannelAsync(RedisChannel channel) =>
+        this.subscriber.SubscribeAsync(channel);
+
     private async Task SubmitTaskCoreAsync(AgentTaskRequest request)
     {
         var json = JsonSerializer.Serialize(request, SerializerOptions);
@@ -220,12 +229,12 @@ public sealed class RedisAgentTaskBroker : IAgentTaskBroker, IAsyncDisposable
         await using (registration.ConfigureAwait(false))
         {
             var channel = RedisChannel.Literal(TasksChannel);
-            var messageQueue = await this.subscriber.SubscribeAsync(channel).ConfigureAwait(false);
+            var messageQueue = await this.SubscribeChannelAsync(channel).ConfigureAwait(false);
 
             _ = ProcessMessagesAsync(messageQueue, handler, cancellationToken).ConfigureAwait(false);
 
             await tcs.Task.ConfigureAwait(false);
-            await this.subscriber.UnsubscribeAsync(channel).ConfigureAwait(false);
+            await messageQueue.UnsubscribeAsync().ConfigureAwait(false);
         }
 
         static async Task ProcessMessagesAsync(
@@ -298,12 +307,12 @@ public sealed class RedisAgentTaskBroker : IAgentTaskBroker, IAsyncDisposable
         await using (registration.ConfigureAwait(false))
         {
             var redisChannel = RedisChannel.Literal(channel);
-            var messageQueue = await this.subscriber.SubscribeAsync(redisChannel).ConfigureAwait(false);
+            var messageQueue = await this.SubscribeChannelAsync(redisChannel).ConfigureAwait(false);
 
             _ = this.ProcessResultMessagesAsync(messageQueue, handler, tcs, cancellationToken).ConfigureAwait(false);
 
             await tcs.Task.ConfigureAwait(false);
-            await this.subscriber.UnsubscribeAsync(redisChannel).ConfigureAwait(false);
+            await messageQueue.UnsubscribeAsync().ConfigureAwait(false);
         }
     }
 
@@ -367,12 +376,12 @@ public sealed class RedisAgentTaskBroker : IAgentTaskBroker, IAsyncDisposable
         await using (registration.ConfigureAwait(false))
         {
             var redisChannel = RedisChannel.Literal(channel);
-            var messageQueue = await this.subscriber.SubscribeAsync(redisChannel).ConfigureAwait(false);
+            var messageQueue = await this.SubscribeChannelAsync(redisChannel).ConfigureAwait(false);
 
             _ = ProcessProgressMessagesAsync(messageQueue, handler, cancellationToken).ConfigureAwait(false);
 
             await tcs.Task.ConfigureAwait(false);
-            await this.subscriber.UnsubscribeAsync(redisChannel).ConfigureAwait(false);
+            await messageQueue.UnsubscribeAsync().ConfigureAwait(false);
         }
 
         static async Task ProcessProgressMessagesAsync(

@@ -193,8 +193,8 @@ public class OutlookMailToolsTests : IDisposable
         // Assert
         Assert.NotNull(domains);
         Assert.Equal(2, domains.Length);
-        Assert.Contains("SPAM1.COM", domains);
-        Assert.Contains("SPAM2.COM", domains);
+        Assert.Contains("SPAM1.COM", domains, StringComparer.Ordinal);
+        Assert.Contains("SPAM2.COM", domains, StringComparer.Ordinal);
     }
 
     /// <summary>

@@ -133,7 +133,7 @@ internal sealed partial class TelemetrySetup : IDisposable
             _ = builder.AddConsoleExporter();
         }
 
-        return builder.Build()!;
+        return builder.Build();
     }
 
     private static MeterProvider BuildMeterProvider(string sourceName, ResourceBuilder resourceBuilder, ExporterConfig config)
@@ -155,7 +155,7 @@ internal sealed partial class TelemetrySetup : IDisposable
             _ = builder.AddConsoleExporter();
         }
 
-        return builder.Build()!;
+        return builder.Build();
     }
 
     private static ServiceProvider BuildLoggingServiceProvider(ResourceBuilder resourceBuilder, ExporterConfig config)

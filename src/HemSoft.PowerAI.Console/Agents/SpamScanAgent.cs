@@ -79,6 +79,12 @@ internal sealed partial class SpamScanAgent : IDisposable
         this.tools = new SpamScanTools(storageService, humanReviewService, graphClientProvider);
     }
 
+    [GeneratedRegex(
+        @"BATCH_STATS:\s*processed\s*=\s*(?<processed>\d+)\s*,\s*skipped_known\s*=\s*(?<skipped>\d+)\s*,\s*skipped_pending\s*=\s*(?<pending>\d+)\s*,\s*flagged\s*=\s*(?<flagged>\d+)",
+        RegexOptions.IgnoreCase | RegexOptions.ExplicitCapture,
+        matchTimeoutMilliseconds: 1000)]
+    private static partial Regex BatchStatsRegex { get; }
+
     /// <summary>
     /// Runs the autonomous spam scanning workflow.
     /// </summary>
@@ -222,7 +228,7 @@ internal sealed partial class SpamScanAgent : IDisposable
             return result;
         }
 
-        var statsMatch = BatchStatsRegex().Match(responseText);
+        var statsMatch = BatchStatsRegex.Match(responseText);
 
         if (statsMatch.Success)
         {
@@ -274,12 +280,6 @@ internal sealed partial class SpamScanAgent : IDisposable
 
     private static string Truncate(string text, int maxLength) =>
         text.Length <= maxLength ? text : text[..(maxLength - 1)] + "…";
-
-    [GeneratedRegex(
-        @"BATCH_STATS:\s*processed\s*=\s*(?<processed>\d+)\s*,\s*skipped_known\s*=\s*(?<skipped>\d+)\s*,\s*skipped_pending\s*=\s*(?<pending>\d+)\s*,\s*flagged\s*=\s*(?<flagged>\d+)",
-        RegexOptions.IgnoreCase | RegexOptions.ExplicitCapture,
-        matchTimeoutMilliseconds: 1000)]
-    private static partial Regex BatchStatsRegex();
 
     private async Task<ScanBatchResult> ProcessScanBatchAsync(AIAgent agent, int batchSize, CancellationToken cancellationToken)
     {

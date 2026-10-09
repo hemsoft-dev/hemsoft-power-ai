@@ -78,8 +78,8 @@ public class SpamScanToolsTests : IDisposable
         // Assert
         Assert.NotNull(domains);
         Assert.Equal(2, domains.Length);
-        Assert.Contains("SPAM.COM", domains);
-        Assert.Contains("JUNK.COM", domains);
+        Assert.Contains("SPAM.COM", domains, StringComparer.Ordinal);
+        Assert.Contains("JUNK.COM", domains, StringComparer.Ordinal);
     }
 
     /// <summary>
@@ -114,8 +114,8 @@ public class SpamScanToolsTests : IDisposable
         // Assert
         Assert.NotNull(domains);
         Assert.Equal(2, domains.Length);
-        Assert.Contains("PENDING1.COM", domains);
-        Assert.Contains("PENDING2.COM", domains);
+        Assert.Contains("PENDING1.COM", domains, StringComparer.Ordinal);
+        Assert.Contains("PENDING2.COM", domains, StringComparer.Ordinal);
     }
 
     /// <summary>

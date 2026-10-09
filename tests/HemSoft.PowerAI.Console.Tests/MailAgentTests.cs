@@ -13,8 +13,28 @@ using Microsoft.Agents.AI;
 /// <summary>
 /// Unit tests for <see cref="MailAgent"/>.
 /// </summary>
-public class MailAgentTests
+[Collection("EnvironmentVariableTests")]
+public sealed class MailAgentTests : IDisposable
 {
+    private readonly string? originalBaseUrl = Environment.GetEnvironmentVariable("OPENROUTER_BASE_URL");
+    private readonly string? originalApiKey = Environment.GetEnvironmentVariable("OPENROUTER_API_KEY");
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="MailAgentTests"/> class with offline client configuration.
+    /// </summary>
+    public MailAgentTests()
+    {
+        Environment.SetEnvironmentVariable("OPENROUTER_BASE_URL", "https://fixture.invalid/");
+        Environment.SetEnvironmentVariable("OPENROUTER_API_KEY", "offline-test-key");
+    }
+
+    /// <inheritdoc/>
+    public void Dispose()
+    {
+        Environment.SetEnvironmentVariable("OPENROUTER_BASE_URL", this.originalBaseUrl);
+        Environment.SetEnvironmentVariable("OPENROUTER_API_KEY", this.originalApiKey);
+    }
+
     /// <summary>
     /// Tests that Create returns a non-null AIAgent with correct name when using unconfigured Graph client.
     /// Note: Agent creation succeeds even with null client - the tool will return an error at runtime.

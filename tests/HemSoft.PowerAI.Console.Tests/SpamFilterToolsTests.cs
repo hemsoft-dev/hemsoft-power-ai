@@ -77,8 +77,8 @@ public class SpamFilterToolsTests : IDisposable
         // Assert
         Assert.NotNull(domains);
         Assert.Equal(2, domains.Length);
-        Assert.Contains("SPAM.COM", domains);
-        Assert.Contains("JUNK.COM", domains);
+        Assert.Contains("SPAM.COM", domains, StringComparer.Ordinal);
+        Assert.Contains("JUNK.COM", domains, StringComparer.Ordinal);
     }
 
     /// <summary>
@@ -100,8 +100,6 @@ public class SpamFilterToolsTests : IDisposable
     /// </summary>
     [Fact]
     public void IsKnownSpamDomainReturnsFalseForUnknownDomain() =>
-
-        // Act & Assert
         Assert.False(this.sut.IsKnownSpamDomain("unknown.com"));
 
     /// <summary>

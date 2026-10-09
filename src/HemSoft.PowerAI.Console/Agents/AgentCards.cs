@@ -12,7 +12,7 @@ using A2A;
 /// </summary>
 internal static class AgentCards
 {
-    private const string ProtocolVersion = "0.3.0";
+    private const string ProtocolVersion = "1.0";
     private const string TextPlainMimeType = "text/plain";
 
     /// <summary>
@@ -28,16 +28,22 @@ internal static class AgentCards
             web searches and synthesizes findings into clear, actionable insights
             with sources and recommendations.
             """,
-        Url = baseUrl.ToString(),
+        SupportedInterfaces =
+        [
+            new AgentInterface
+            {
+                Url = baseUrl.ToString(),
+                ProtocolBinding = "JSONRPC",
+                ProtocolVersion = ProtocolVersion,
+            },
+        ],
         Version = "1.0.0",
-        ProtocolVersion = ProtocolVersion,
         DefaultInputModes = [TextPlainMimeType],
         DefaultOutputModes = [TextPlainMimeType],
         Capabilities = new AgentCapabilities
         {
             Streaming = false,
             PushNotifications = false,
-            StateTransitionHistory = false,
         },
         Skills =
         [
@@ -74,16 +80,22 @@ internal static class AgentCards
             specialized agents. Coordinates research tasks, file operations, and
             synthesizes results.
             """,
-        Url = baseUrl.ToString(),
+        SupportedInterfaces =
+        [
+            new AgentInterface
+            {
+                Url = baseUrl.ToString(),
+                ProtocolBinding = "JSONRPC",
+                ProtocolVersion = ProtocolVersion,
+            },
+        ],
         Version = "1.0.0",
-        ProtocolVersion = ProtocolVersion,
         DefaultInputModes = [TextPlainMimeType],
         DefaultOutputModes = [TextPlainMimeType],
         Capabilities = new AgentCapabilities
         {
             Streaming = false,
             PushNotifications = false,
-            StateTransitionHistory = false,
         },
         Skills =
         [

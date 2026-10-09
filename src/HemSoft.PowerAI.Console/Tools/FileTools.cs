@@ -174,7 +174,7 @@ internal static class FileTools
             var truncatedLength = content.Length.ToString("N0", CultureInfo.InvariantCulture);
             return $"{content[..maxLength]}\n\n[Truncated - file is {truncatedLength} characters]";
         }
-        catch (Exception ex) when (ex is UnauthorizedAccessException or IOException)
+        catch (Exception ex) when (ex is UnauthorizedAccessException or IOException or ArgumentException)
         {
             return FormatError("reading", path, ex);
         }
@@ -187,7 +187,7 @@ internal static class FileTools
             _ = Directory.CreateDirectory(path);
             return $"Created: {path}";
         }
-        catch (Exception ex) when (ex is UnauthorizedAccessException or IOException)
+        catch (Exception ex) when (ex is UnauthorizedAccessException or IOException or ArgumentException)
         {
             return FormatError("creating", path, ex);
         }
@@ -211,7 +211,7 @@ internal static class FileTools
 
             return $"Not found: {path}";
         }
-        catch (Exception ex) when (ex is UnauthorizedAccessException or IOException)
+        catch (Exception ex) when (ex is UnauthorizedAccessException or IOException or ArgumentException)
         {
             return FormatError("deleting", path, ex);
         }
@@ -240,7 +240,7 @@ internal static class FileTools
 
             return $"Source not found: {source}";
         }
-        catch (Exception ex) when (ex is UnauthorizedAccessException or IOException)
+        catch (Exception ex) when (ex is UnauthorizedAccessException or IOException or ArgumentException)
         {
             return FormatError("moving", source, ex);
         }
@@ -265,7 +265,7 @@ internal static class FileTools
                 ? "Directory copy not supported. Use move or copy individual files."
                 : $"Source not found: {source}";
         }
-        catch (Exception ex) when (ex is UnauthorizedAccessException or IOException)
+        catch (Exception ex) when (ex is UnauthorizedAccessException or IOException or ArgumentException)
         {
             return FormatError("copying", source, ex);
         }
@@ -295,7 +295,7 @@ internal static class FileTools
             File.WriteAllText(path, unescaped);
             return $"Written {unescaped.Length.ToString("N0", CultureInfo.InvariantCulture)} characters to: {path}";
         }
-        catch (Exception ex) when (ex is UnauthorizedAccessException or IOException)
+        catch (Exception ex) when (ex is UnauthorizedAccessException or IOException or ArgumentException)
         {
             return FormatError("writing", path, ex);
         }

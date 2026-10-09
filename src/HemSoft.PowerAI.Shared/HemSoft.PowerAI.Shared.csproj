@@ -14,14 +14,14 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="A2A" Version="0.3.3-preview" />
-    <PackageReference Include="Azure.Identity" Version="1.18.0-beta.2" />
-    <PackageReference Include="Microsoft.Agents.AI" Version="1.0.0-preview.251125.1" />
-    <PackageReference Include="Microsoft.Extensions.AI" Version="10.1.1" />
-    <PackageReference Include="Microsoft.Extensions.AI.OpenAI" Version="10.0.1-preview.1.25571.5" />
-    <PackageReference Include="Microsoft.Graph" Version="5.98.0" />
-    <PackageReference Include="Microsoft.Identity.Client.Extensions.Msal" Version="4.79.2" />
-    <PackageReference Include="StackExchange.Redis" Version="2.10.1" />
+    <PackageReference Include="A2A" Version="1.0.0-preview2" />
+    <PackageReference Include="Azure.Identity" Version="1.21.0" />
+    <PackageReference Include="Microsoft.Agents.AI" Version="1.24.0" />
+    <PackageReference Include="Microsoft.Extensions.AI" Version="10.10.0" />
+    <PackageReference Include="Microsoft.Extensions.AI.OpenAI" Version="10.10.1" />
+    <PackageReference Include="Microsoft.Graph" Version="6.8.0" />
+    <PackageReference Include="Microsoft.Identity.Client.Extensions.Msal" Version="4.90.1" />
+    <PackageReference Include="StackExchange.Redis" Version="4.0.86-alpha" />
   </ItemGroup>
 
 </Project>

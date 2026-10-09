@@ -10,6 +10,8 @@ using System.Globalization;
 using A2A;
 using A2A.AspNetCore;
 
+using HemSoft.PowerAI.Common.Agents;
+
 using Microsoft.Agents.AI;
 
 /// <summary>
@@ -30,6 +32,11 @@ internal sealed class A2AAgentHost(
     private WebApplication? app;
 
     /// <summary>
+    /// Gets the listening address after startup, including an assigned ephemeral port.
+    /// </summary>
+    internal Uri? ListeningUri => this.app is null ? null : new Uri(this.app.Urls.Single());
+
+    /// <summary>
     /// Starts the A2A server asynchronously.
     /// </summary>
     /// <param name="cancellationToken">The cancellation token.</param>
@@ -42,46 +49,27 @@ internal sealed class A2AAgentHost(
         }
 
         var builder = WebApplication.CreateSlimBuilder();
-        _ = builder.WebHost.UseUrls(string.Format(CultureInfo.InvariantCulture, "http://localhost:{0}", port));
+        _ = builder.WebHost.UseUrls(string.Format(CultureInfo.InvariantCulture, "http://127.0.0.1:{0}", port));
 
-        this.app = builder.Build();
-
-        // Create task manager with agent handlers using object initializer pattern
-        var taskManager = new TaskManager
+        builder.Services.AddSingleton(_ => new AgentMessageHandler(async (text, ct) =>
         {
-            OnMessageReceived = async (messageSendParams, ct) =>
-            {
-                // Extract the text from the incoming message
-                var userText = string.Join(
-                    '\n',
-                    messageSendParams.Message.Parts
-                        .OfType<TextPart>()
-                        .Select(p => p.Text));
+            var response = await agent.RunAsync(text, cancellationToken: ct).ConfigureAwait(false);
+            return response.Text ?? "No response generated.";
+        }));
+        builder.Services.AddA2AAgent<AgentMessageHandler>(agentCard);
+        builder.Services.AddSingleton<IAgentHandler>(provider => provider.GetRequiredService<AgentMessageHandler>());
+        this.app = builder.Build();
+        _ = this.app.MapA2A(routePath);
+        IResult GetAgentCard(HttpRequest request)
+        {
+            var configuredEndpoint = new Uri(agentCard.SupportedInterfaces[0].Url);
+            var endpoint = configuredEndpoint.IsLoopback
+                ? new Uri($"{request.Scheme}://{request.Host}{request.PathBase}{routePath}")
+                : configuredEndpoint;
+            return Results.Ok(AgentCards.WithEndpoint(agentCard, endpoint));
+        }
 
-                // Run the AIAgent with the user's message
-                var agentResponse = await agent.RunAsync(userText, cancellationToken: ct).ConfigureAwait(false);
-
-                // Return the response as an AgentMessage
-                return new AgentMessage
-                {
-                    Role = MessageRole.Agent,
-                    MessageId = Guid.NewGuid().ToString(),
-                    ContextId = messageSendParams.Message.ContextId,
-                    Parts = [new TextPart { Text = agentResponse.Text ?? "No response generated." }],
-                };
-            },
-            OnAgentCardQuery = (agentUrl, _) =>
-            {
-                // Update the URL in the card to match the actual hosting URL
-                var card = agentCard;
-                card.Url = agentUrl;
-                return Task.FromResult(card);
-            },
-        };
-
-        // Map the A2A endpoints using the framework pattern
-        _ = this.app.MapA2A(taskManager, routePath);
-        _ = this.app.MapWellKnownAgentCard(taskManager, routePath);
+        _ = this.app.MapGet("/.well-known/agent-card.json", GetAgentCard);
 
         await this.app.StartAsync(cancellationToken).ConfigureAwait(false);
     }

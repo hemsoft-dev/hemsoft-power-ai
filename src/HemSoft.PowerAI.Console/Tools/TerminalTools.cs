@@ -162,6 +162,8 @@ internal static class TerminalTools
                 return $"Error: Command timed out after {timeoutSec}s\nPartial output:\n{output}";
             }
 
+            // The timed overload does not wait for asynchronous output handlers to finish.
+            process.WaitForExit();
             return FormatResult(output.ToString(), error.ToString(), process.ExitCode);
         }
         catch (Exception ex) when (ex is InvalidOperationException or System.ComponentModel.Win32Exception)

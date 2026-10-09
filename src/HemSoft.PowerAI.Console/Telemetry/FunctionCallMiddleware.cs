@@ -88,7 +88,7 @@ internal sealed class FunctionCallMiddleware(IChatClient innerClient) : Delegati
 
         foreach (var call in functionCalls.Where(c => c.Name != null))
         {
-            LogFunctionCall(call.Name!, call.Arguments, activity);
+            LogFunctionCall(call.Name, call.Arguments, activity);
         }
     }
 

@@ -116,6 +116,12 @@ The main chat has access to:
 }
 ```
 
+The standalone AgentHost advertises the address used for discovery. Behind a
+reverse proxy, set `AgentHost__PublicUrl` to its public JSON-RPC endpoint. This
+sets `AgentHost:PublicUrl` in .NET configuration. Console-hosted agents preserve
+an explicitly configured public card URL; local cards use the discovery request
+address. Both hosts expose `/.well-known/agent-card.json`.
+
 ### Microsoft Graph Setup (for Outlook Mail)
 
 1. Register an app at [Microsoft Entra admin center](https://entra.microsoft.com)
