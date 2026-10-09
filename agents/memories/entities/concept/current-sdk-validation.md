@@ -3,12 +3,10 @@ title: Current SDK validation
 version: "1.0.0"
 type: concept
 permalink: current-sdk-validation
-created: 2026-10-09T12:45:00Z
-updated: 2026-10-09T12:45:00Z
+created: 2026-10-09T12:52:03Z
+updated: 2026-10-09T12:52:03Z
 tags: [a2a, testing, validation]
 ---
-
-# Current SDK validation
 
 ## Observations
 
