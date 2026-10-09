@@ -32,6 +32,11 @@ internal sealed class A2AAgentHost(
     private WebApplication? app;
 
     /// <summary>
+    /// Gets the listening address after startup, including an assigned ephemeral port.
+    /// </summary>
+    internal Uri? ListeningUri => this.app is null ? null : new Uri(this.app.Urls.Single());
+
+    /// <summary>
     /// Starts the A2A server asynchronously.
     /// </summary>
     /// <param name="cancellationToken">The cancellation token.</param>
@@ -44,7 +49,7 @@ internal sealed class A2AAgentHost(
         }
 
         var builder = WebApplication.CreateSlimBuilder();
-        _ = builder.WebHost.UseUrls(string.Format(CultureInfo.InvariantCulture, "http://localhost:{0}", port));
+        _ = builder.WebHost.UseUrls(string.Format(CultureInfo.InvariantCulture, "http://127.0.0.1:{0}", port));
 
         builder.Services.AddSingleton(_ => new AgentMessageHandler(async (text, ct) =>
         {
@@ -52,8 +57,19 @@ internal sealed class A2AAgentHost(
             return response.Text ?? "No response generated.";
         }));
         builder.Services.AddA2AAgent<AgentMessageHandler>(agentCard);
+        builder.Services.AddSingleton<IAgentHandler>(provider => provider.GetRequiredService<AgentMessageHandler>());
         this.app = builder.Build();
         _ = this.app.MapA2A(routePath);
+        IResult GetAgentCard(HttpRequest request)
+        {
+            var configuredEndpoint = new Uri(agentCard.SupportedInterfaces[0].Url);
+            var endpoint = configuredEndpoint.IsLoopback
+                ? new Uri($"{request.Scheme}://{request.Host}{request.PathBase}{routePath}")
+                : configuredEndpoint;
+            return Results.Ok(AgentCards.WithEndpoint(agentCard, endpoint));
+        }
+
+        _ = this.app.MapGet("/.well-known/agent-card.json", GetAgentCard);
 
         await this.app.StartAsync(cancellationToken).ConfigureAwait(false);
     }

@@ -9,6 +9,7 @@
 
   <ItemGroup>
     <InternalsVisibleTo Include="HemSoft.PowerAI.AgentHost.Tests" />
+    <InternalsVisibleTo Include="HemSoft.PowerAI.Console.Tests" />
   </ItemGroup>
 
   <ItemGroup>

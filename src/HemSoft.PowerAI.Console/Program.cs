@@ -1260,8 +1260,8 @@ internal static partial class Program
         }
         finally
         {
-            await progressCts.CancelAsync().ConfigureAwait(false);
-            await progressTask.ConfigureAwait(false);
+            await ProgressSubscription.CompleteAsync(progressTask, progressCts, logService.Log, TimeSpan.FromSeconds(2))
+                .ConfigureAwait(false);
         }
 
         if (result is not null)

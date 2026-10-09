@@ -31,6 +31,42 @@ public static class AgentCards
         "Read, write, and manage files and directories. Save research results and organize file structures.";
 
     /// <summary>
+    /// Copies an unsigned agent card with the externally reachable JSON-RPC endpoint.
+    /// </summary>
+    /// <param name="card">The card whose metadata is preserved.</param>
+    /// <param name="endpoint">The public JSON-RPC endpoint.</param>
+    /// <returns>A new card without mutating shared discovery metadata.</returns>
+    public static AgentCard WithEndpoint(AgentCard card, Uri endpoint)
+    {
+        ArgumentNullException.ThrowIfNull(card);
+        ArgumentNullException.ThrowIfNull(endpoint);
+        return new AgentCard
+        {
+            Name = card.Name,
+            Description = card.Description,
+            Version = card.Version,
+            DocumentationUrl = card.DocumentationUrl,
+            IconUrl = card.IconUrl,
+            SupportedInterfaces =
+            [
+                new AgentInterface
+                {
+                    Url = endpoint.ToString(),
+                    ProtocolBinding = "JSONRPC",
+                    ProtocolVersion = ProtocolVersion,
+                },
+            ],
+            Capabilities = card.Capabilities,
+            Provider = card.Provider,
+            Skills = card.Skills,
+            DefaultInputModes = card.DefaultInputModes,
+            DefaultOutputModes = card.DefaultOutputModes,
+            SecuritySchemes = card.SecuritySchemes,
+            SecurityRequirements = card.SecurityRequirements,
+        };
+    }
+
+    /// <summary>
     /// Gets the AgentCard for the ResearchAgent.
     /// </summary>
     /// <param name="baseUrl">The base URL where the agent is hosted.</param>

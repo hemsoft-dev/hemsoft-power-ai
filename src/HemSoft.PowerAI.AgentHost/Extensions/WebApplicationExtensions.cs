@@ -6,6 +6,8 @@ namespace HemSoft.PowerAI.AgentHost.Extensions;
 
 using A2A.AspNetCore;
 
+using HemSoft.PowerAI.Common.Agents;
+
 /// <summary>
 /// Extension methods for configuring the web application.
 /// </summary>
@@ -33,6 +35,16 @@ internal static class WebApplicationExtensions
         ArgumentException.ThrowIfNullOrEmpty(agentName);
 
         app.MapA2A(routePath);
+        IResult GetAgentCard(HttpRequest request)
+        {
+            var publicUrl = app.Configuration["AgentHost:PublicUrl"];
+            var endpoint = string.IsNullOrEmpty(publicUrl)
+                ? new Uri($"{request.Scheme}://{request.Host}{request.PathBase}{routePath}")
+                : new Uri(publicUrl);
+            return Results.Ok(AgentCards.CreateResearchAgentCard(endpoint));
+        }
+
+        app.MapGet("/.well-known/agent-card.json", GetAgentCard);
         app.MapGet("/health", () => Results.Ok(new { status = "healthy", agent = agentName }));
 
         return app;

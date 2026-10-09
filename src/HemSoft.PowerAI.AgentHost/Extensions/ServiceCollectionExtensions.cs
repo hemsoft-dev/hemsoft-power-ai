@@ -6,6 +6,7 @@ namespace HemSoft.PowerAI.AgentHost.Extensions;
 
 using System.Globalization;
 
+using A2A;
 using A2A.AspNetCore;
 
 using HemSoft.PowerAI.AgentHost.Configuration;
@@ -43,6 +44,7 @@ internal static class ServiceCollectionExtensions
             return response.Text ?? "No response generated.";
         }));
         services.AddA2AAgent<AgentMessageHandler>(card);
+        services.AddSingleton<IAgentHandler>(provider => provider.GetRequiredService<AgentMessageHandler>());
         return services;
     }
 }
