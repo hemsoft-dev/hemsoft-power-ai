@@ -92,7 +92,7 @@ public sealed class RedisResultStorageService : IResultStorageService, IAsyncDis
         ObjectDisposedException.ThrowIf(this.disposed, this);
         ArgumentException.ThrowIfNullOrWhiteSpace(storageKey);
 
-        return this.database.KeyDeleteAsync(storageKey);
+        return this.database.Context.Keys.DeleteAsync(storageKey, cancellationToken: cancellationToken).AsTask();
     }
 
     /// <inheritdoc/>

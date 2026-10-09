@@ -12,7 +12,7 @@ using A2A;
 /// </summary>
 public static class AgentCards
 {
-    private const string ProtocolVersion = "0.3.0";
+    private const string ProtocolVersion = "1.0";
     private const string TextPlainMimeType = "text/plain";
 
     private const string ResearchAgentDescription =
@@ -44,16 +44,22 @@ public static class AgentCards
         {
             Name = "ResearchAgent",
             Description = ResearchAgentDescription,
-            Url = baseUrl.ToString(),
+            SupportedInterfaces =
+            [
+                new AgentInterface
+                {
+                    Url = baseUrl.ToString(),
+                    ProtocolBinding = "JSONRPC",
+                    ProtocolVersion = ProtocolVersion,
+                },
+            ],
             Version = "1.0.0",
-            ProtocolVersion = ProtocolVersion,
             DefaultInputModes = [TextPlainMimeType],
             DefaultOutputModes = [TextPlainMimeType],
             Capabilities = new AgentCapabilities
             {
                 Streaming = false,
                 PushNotifications = false,
-                StateTransitionHistory = false,
             },
             Skills =
             [
@@ -88,16 +94,22 @@ public static class AgentCards
         {
             Name = "CoordinatorAgent",
             Description = CoordinatorDescription,
-            Url = baseUrl.ToString(),
+            SupportedInterfaces =
+            [
+                new AgentInterface
+                {
+                    Url = baseUrl.ToString(),
+                    ProtocolBinding = "JSONRPC",
+                    ProtocolVersion = ProtocolVersion,
+                },
+            ],
             Version = "1.0.0",
-            ProtocolVersion = ProtocolVersion,
             DefaultInputModes = [TextPlainMimeType],
             DefaultOutputModes = [TextPlainMimeType],
             Capabilities = new AgentCapabilities
             {
                 Streaming = false,
                 PushNotifications = false,
-                StateTransitionHistory = false,
             },
             Skills =
             [

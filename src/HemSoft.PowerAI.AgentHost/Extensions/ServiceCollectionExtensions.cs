@@ -6,11 +6,9 @@ namespace HemSoft.PowerAI.AgentHost.Extensions;
 
 using System.Globalization;
 
-using A2A;
+using A2A.AspNetCore;
 
-using HemSoft.PowerAI.AgentHost.Abstractions;
 using HemSoft.PowerAI.AgentHost.Configuration;
-using HemSoft.PowerAI.AgentHost.Handlers;
 using HemSoft.PowerAI.Common.Agents;
 
 using Microsoft.Agents.AI;
@@ -31,38 +29,20 @@ internal static class ServiceCollectionExtensions
         ArgumentNullException.ThrowIfNull(services);
         ArgumentNullException.ThrowIfNull(options);
 
-        services.AddSingleton<AIAgent>(_ =>
+        services.AddSingleton(_ =>
             string.IsNullOrEmpty(options.ModelId)
                 ? ResearchAgent.Create()
                 : ResearchAgent.Create(options.ModelId));
 
-        services.AddSingleton(_ =>
+        var baseUrl = new Uri(string.Format(CultureInfo.InvariantCulture, "http://localhost:{0}", options.Port));
+        var card = AgentCards.CreateResearchAgentCard(baseUrl);
+        services.AddSingleton(provider => new AgentMessageHandler(async (text, ct) =>
         {
-            var baseUrl = new Uri(string.Format(CultureInfo.InvariantCulture, "http://localhost:{0}", options.Port));
-            return AgentCards.CreateResearchAgentCard(baseUrl);
-        });
-
-        services.AddSingleton<IA2ATaskHandler, ResearchAgentTaskHandler>();
-
+            var agent = provider.GetRequiredService<AIAgent>();
+            var response = await agent.RunAsync(text, cancellationToken: ct).ConfigureAwait(false);
+            return response.Text ?? "No response generated.";
+        }));
+        services.AddA2AAgent<AgentMessageHandler>(card);
         return services;
-    }
-
-    /// <summary>
-    /// Creates a TaskManager configured with the registered task handler.
-    /// </summary>
-    /// <param name="serviceProvider">The service provider.</param>
-    /// <returns>A configured TaskManager.</returns>
-    public static TaskManager CreateTaskManager(this IServiceProvider serviceProvider)
-    {
-        ArgumentNullException.ThrowIfNull(serviceProvider);
-
-        var handler = serviceProvider.GetRequiredService<IA2ATaskHandler>();
-
-        return new TaskManager
-        {
-            OnMessageReceived = async (messageSendParams, ct) =>
-                await handler.HandleMessageAsync(messageSendParams, ct).ConfigureAwait(false),
-            OnAgentCardQuery = handler.GetAgentCardAsync,
-        };
     }
 }

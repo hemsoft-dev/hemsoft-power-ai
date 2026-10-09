@@ -233,6 +233,8 @@ public static class TerminalTools
                 return $"Error: Command timed out after {timeoutSecs}s\nPartial output:\n{output}";
             }
 
+            // Complete the redirected stream callbacks before collecting their buffers.
+            process.WaitForExit();
             return FormatResult(output.ToString(), error.ToString(), process.ExitCode);
         }
         catch (Exception ex) when (ex is InvalidOperationException or System.ComponentModel.Win32Exception)

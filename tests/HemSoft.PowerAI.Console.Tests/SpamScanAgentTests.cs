@@ -753,7 +753,7 @@ public class SpamScanAgentTests : IDisposable
         Assert.Equal(10000, scanResult.Domain.Length);
         Assert.Equal(10000, scanResult.Subject.Length);
         Assert.Equal(10000, scanResult.Status.Length);
-        Assert.Equal(10000, scanResult.Reason!.Length);
+        Assert.Equal(10000, scanResult.Reason.Length);
     }
 
     /// <summary>
@@ -761,8 +761,6 @@ public class SpamScanAgentTests : IDisposable
     /// </summary>
     [Fact]
     public void ConstructorThrowsForNullSettings() =>
-
-        // Act & Assert
         Assert.Throws<NullReferenceException>(() =>
         {
             using var agent = new SpamScanAgent(null!);

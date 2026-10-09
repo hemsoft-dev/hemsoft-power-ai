@@ -36,7 +36,7 @@ public class AgentCardsTests
         var card = AgentCards.CreateResearchAgentCard(TestBaseUri);
 
         // Assert
-        Assert.Equal(TestBaseUri.ToString(), card.Url);
+        Assert.Equal(TestBaseUri.ToString(), Assert.Single(card.SupportedInterfaces).Url);
     }
 
     /// <summary>
@@ -103,7 +103,7 @@ public class AgentCardsTests
         var card = AgentCards.CreateCoordinatorAgentCard(TestBaseUri);
 
         // Assert
-        Assert.Equal(TestBaseUri.ToString(), card.Url);
+        Assert.Equal(TestBaseUri.ToString(), Assert.Single(card.SupportedInterfaces).Url);
     }
 
     /// <summary>
@@ -175,10 +175,10 @@ public class AgentCardsTests
         var coordinatorCard = AgentCards.CreateCoordinatorAgentCard(TestBaseUri);
 
         // Assert
-        Assert.NotNull(researchCard.ProtocolVersion);
-        Assert.NotEmpty(researchCard.ProtocolVersion);
-        Assert.NotNull(coordinatorCard.ProtocolVersion);
-        Assert.NotEmpty(coordinatorCard.ProtocolVersion);
+        Assert.NotNull(Assert.Single(researchCard.SupportedInterfaces).ProtocolVersion);
+        Assert.NotEmpty(Assert.Single(researchCard.SupportedInterfaces).ProtocolVersion);
+        Assert.NotNull(Assert.Single(coordinatorCard.SupportedInterfaces).ProtocolVersion);
+        Assert.NotEmpty(Assert.Single(coordinatorCard.SupportedInterfaces).ProtocolVersion);
     }
 
     /// <summary>

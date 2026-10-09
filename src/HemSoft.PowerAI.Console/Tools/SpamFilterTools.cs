@@ -46,6 +46,12 @@ internal sealed partial class SpamFilterTools(
     private int skipCount;
     private bool disposed;
 
+    [GeneratedRegex(@"<[^>]+>", RegexOptions.None, matchTimeoutMilliseconds: 1000)]
+    private static partial Regex HtmlTagRegex { get; }
+
+    [GeneratedRegex(@"\s+", RegexOptions.None, matchTimeoutMilliseconds: 1000)]
+    private static partial Regex WhitespaceRegex { get; }
+
     /// <summary>
     /// Sets the callback to be invoked when an email is evaluated.
     /// </summary>
@@ -472,15 +478,9 @@ internal sealed partial class SpamFilterTools(
         }
 
         // Strip HTML tags for a cleaner preview
-        var text = HtmlTagRegex().Replace(body, " ");
-        text = WhitespaceRegex().Replace(text, " ").Trim();
+        var text = HtmlTagRegex.Replace(body, " ");
+        text = WhitespaceRegex.Replace(text, " ").Trim();
 
         return text.Length <= maxLength ? text : text[..maxLength] + "...";
     }
-
-    [GeneratedRegex(@"<[^>]+>", RegexOptions.None, matchTimeoutMilliseconds: 1000)]
-    private static partial Regex HtmlTagRegex();
-
-    [GeneratedRegex(@"\s+", RegexOptions.None, matchTimeoutMilliseconds: 1000)]
-    private static partial Regex WhitespaceRegex();
 }

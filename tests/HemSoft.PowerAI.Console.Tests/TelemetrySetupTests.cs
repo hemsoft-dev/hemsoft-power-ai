@@ -330,7 +330,7 @@ public sealed class TelemetrySetupTests
             // Assert
             Assert.NotNull(telemetry1);
             Assert.NotNull(telemetry2);
-            Assert.NotEqual(telemetry1.ActivitySource.Name, telemetry2.ActivitySource.Name);
+            Assert.NotEqual(telemetry1.ActivitySource.Name, telemetry2.ActivitySource.Name, StringComparer.Ordinal);
         }
         finally
         {

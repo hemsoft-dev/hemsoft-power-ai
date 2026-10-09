@@ -12,7 +12,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="A2A.AspNetCore" Version="0.3.3-preview" />
+    <PackageReference Include="A2A.AspNetCore" Version="1.0.0-preview2" />
   </ItemGroup>
 
   <ItemGroup>

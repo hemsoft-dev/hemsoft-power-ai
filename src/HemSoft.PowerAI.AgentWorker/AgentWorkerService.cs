@@ -170,8 +170,8 @@ internal sealed partial class AgentWorkerService : BackgroundService
         // Determine the model ID based on agent type
         var modelId = request.AgentType.ToUpperInvariant() switch
         {
-            "RESEARCH" => HemSoft.PowerAI.Common.Agents.ResearchAgent.DefaultModelId,
-            "ITERATIVE-RESEARCH" => HemSoft.PowerAI.Common.Agents.ResearchAgent.DefaultModelId,
+            "RESEARCH" => Common.Agents.ResearchAgent.DefaultModelId,
+            "ITERATIVE-RESEARCH" => Common.Agents.ResearchAgent.DefaultModelId,
             _ => "unknown",
         };
 
@@ -274,10 +274,7 @@ internal sealed partial class AgentWorkerService : BackgroundService
         LogAgentResolved(this.logger, agentCard.Name);
 
         // Get AIAgent and execute the prompt
-        // Note: GetAIAgentAsync doesn't accept CancellationToken in current API
-#pragma warning disable CA2016, MA0040 // Forward the CancellationToken parameter
-        var agent = await cardResolver.GetAIAgentAsync().ConfigureAwait(false);
-#pragma warning restore CA2016, MA0040
+        var agent = await cardResolver.GetAIAgentAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
 
         var response = await agent.RunAsync(prompt, cancellationToken: cancellationToken)
             .ConfigureAwait(false);

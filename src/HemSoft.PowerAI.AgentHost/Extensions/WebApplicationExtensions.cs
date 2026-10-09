@@ -32,10 +32,7 @@ internal static class WebApplicationExtensions
         ArgumentNullException.ThrowIfNull(app);
         ArgumentException.ThrowIfNullOrEmpty(agentName);
 
-        var taskManager = app.Services.CreateTaskManager();
-
-        app.MapA2A(taskManager, routePath);
-        app.MapWellKnownAgentCard(taskManager, routePath);
+        app.MapA2A(routePath);
         app.MapGet("/health", () => Results.Ok(new { status = "healthy", agent = agentName }));
 
         return app;

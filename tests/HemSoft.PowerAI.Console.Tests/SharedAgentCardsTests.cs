@@ -36,7 +36,7 @@ public class SharedAgentCardsTests
         var card = AgentCards.CreateResearchAgentCard(TestBaseUrl);
 
         // Assert
-        Assert.Equal(TestBaseUrl.ToString(), card.Url);
+        Assert.Equal(TestBaseUrl.ToString(), Assert.Single(card.SupportedInterfaces).Url);
     }
 
     /// <summary>
@@ -111,8 +111,8 @@ public class SharedAgentCardsTests
         var card = AgentCards.CreateResearchAgentCard(TestBaseUrl);
 
         // Assert
-        Assert.NotNull(card.ProtocolVersion);
-        Assert.Equal("0.3.0", card.ProtocolVersion);
+        Assert.NotNull(Assert.Single(card.SupportedInterfaces).ProtocolVersion);
+        Assert.Equal("1.0", Assert.Single(card.SupportedInterfaces).ProtocolVersion);
     }
 
     /// <summary>
@@ -170,8 +170,8 @@ public class SharedAgentCardsTests
 
         // Assert
         Assert.NotNull(skill.Tags);
-        Assert.Contains("search", skill.Tags);
-        Assert.Contains("research", skill.Tags);
+        Assert.Contains("search", skill.Tags, StringComparer.Ordinal);
+        Assert.Contains("research", skill.Tags, StringComparer.Ordinal);
     }
 
     /// <summary>
@@ -200,7 +200,7 @@ public class SharedAgentCardsTests
 
         // Assert
         Assert.NotNull(card.DefaultInputModes);
-        Assert.Contains("text/plain", card.DefaultInputModes);
+        Assert.Contains("text/plain", card.DefaultInputModes, StringComparer.Ordinal);
     }
 
     /// <summary>
@@ -214,7 +214,7 @@ public class SharedAgentCardsTests
 
         // Assert
         Assert.NotNull(card.DefaultOutputModes);
-        Assert.Contains("text/plain", card.DefaultOutputModes);
+        Assert.Contains("text/plain", card.DefaultOutputModes, StringComparer.Ordinal);
     }
 
     /// <summary>
@@ -230,7 +230,7 @@ public class SharedAgentCardsTests
         // Assert
         Assert.False(capabilities.Streaming);
         Assert.False(capabilities.PushNotifications);
-        Assert.False(capabilities.StateTransitionHistory);
+        Assert.Equal("JSONRPC", Assert.Single(card.SupportedInterfaces).ProtocolBinding);
     }
 
     /// <summary>
@@ -256,7 +256,7 @@ public class SharedAgentCardsTests
         var card = AgentCards.CreateCoordinatorAgentCard(TestBaseUrl);
 
         // Assert
-        Assert.Equal(TestBaseUrl.ToString(), card.Url);
+        Assert.Equal(TestBaseUrl.ToString(), Assert.Single(card.SupportedInterfaces).Url);
     }
 
     /// <summary>
@@ -331,8 +331,8 @@ public class SharedAgentCardsTests
         var card = AgentCards.CreateCoordinatorAgentCard(TestBaseUrl);
 
         // Assert
-        Assert.NotNull(card.ProtocolVersion);
-        Assert.Equal("0.3.0", card.ProtocolVersion);
+        Assert.NotNull(Assert.Single(card.SupportedInterfaces).ProtocolVersion);
+        Assert.Equal("1.0", Assert.Single(card.SupportedInterfaces).ProtocolVersion);
     }
 
     /// <summary>
@@ -362,7 +362,7 @@ public class SharedAgentCardsTests
         Assert.Equal("Task Orchestration", skill.Name);
         Assert.NotNull(skill.Description);
         Assert.NotNull(skill.Tags);
-        Assert.Contains("orchestration", skill.Tags);
+        Assert.Contains("orchestration", skill.Tags, StringComparer.Ordinal);
     }
 
     /// <summary>
@@ -379,7 +379,7 @@ public class SharedAgentCardsTests
         Assert.Equal("File Operations", skill.Name);
         Assert.NotNull(skill.Description);
         Assert.NotNull(skill.Tags);
-        Assert.Contains("files", skill.Tags);
+        Assert.Contains("files", skill.Tags, StringComparer.Ordinal);
     }
 
     /// <summary>
@@ -393,7 +393,7 @@ public class SharedAgentCardsTests
 
         // Assert
         Assert.NotNull(card.DefaultInputModes);
-        Assert.Contains("text/plain", card.DefaultInputModes);
+        Assert.Contains("text/plain", card.DefaultInputModes, StringComparer.Ordinal);
     }
 
     /// <summary>
@@ -407,7 +407,7 @@ public class SharedAgentCardsTests
 
         // Assert
         Assert.NotNull(card.DefaultOutputModes);
-        Assert.Contains("text/plain", card.DefaultOutputModes);
+        Assert.Contains("text/plain", card.DefaultOutputModes, StringComparer.Ordinal);
     }
 
     /// <summary>
@@ -423,7 +423,7 @@ public class SharedAgentCardsTests
         // Assert
         Assert.False(capabilities.Streaming);
         Assert.False(capabilities.PushNotifications);
-        Assert.False(capabilities.StateTransitionHistory);
+        Assert.Equal("JSONRPC", Assert.Single(card.SupportedInterfaces).ProtocolBinding);
     }
 
     /// <summary>
@@ -440,8 +440,8 @@ public class SharedAgentCardsTests
         var coordinatorCard = AgentCards.CreateCoordinatorAgentCard(httpsUrl);
 
         // Assert
-        Assert.Equal(httpsUrl.ToString(), researchCard.Url);
-        Assert.Equal(httpsUrl.ToString(), coordinatorCard.Url);
+        Assert.Equal(httpsUrl.ToString(), Assert.Single(researchCard.SupportedInterfaces).Url);
+        Assert.Equal(httpsUrl.ToString(), Assert.Single(coordinatorCard.SupportedInterfaces).Url);
     }
 
     /// <summary>
@@ -458,8 +458,8 @@ public class SharedAgentCardsTests
         var coordinatorCard = AgentCards.CreateCoordinatorAgentCard(complexUrl);
 
         // Assert
-        Assert.Equal(complexUrl.ToString(), researchCard.Url);
-        Assert.Equal(complexUrl.ToString(), coordinatorCard.Url);
+        Assert.Equal(complexUrl.ToString(), Assert.Single(researchCard.SupportedInterfaces).Url);
+        Assert.Equal(complexUrl.ToString(), Assert.Single(coordinatorCard.SupportedInterfaces).Url);
     }
 
     /// <summary>

@@ -164,6 +164,12 @@ public sealed partial class IterativeResearchService(
     {
     }
 
+    [GeneratedRegex(
+        @"```(?:json)?\s*(?<json>[\s\S]*?)\s*```",
+        RegexOptions.IgnoreCase | RegexOptions.ExplicitCapture | RegexOptions.NonBacktracking,
+        matchTimeoutMilliseconds: 1000)]
+    private static partial Regex JsonBlockRegex { get; }
+
     /// <summary>
     /// Executes iterative research on the given query using task decomposition.
     /// </summary>
@@ -297,7 +303,7 @@ public sealed partial class IterativeResearchService(
     /// <returns>The parsed evaluation, or null if parsing fails.</returns>
     private static ResearchEvaluation? TryParseFromFencedBlock(string response)
     {
-        var jsonMatch = JsonBlockRegex().Match(response);
+        var jsonMatch = JsonBlockRegex.Match(response);
         if (!jsonMatch.Success)
         {
             return null;
@@ -372,7 +378,7 @@ public sealed partial class IterativeResearchService(
     /// <returns>The extracted markdown, or null if not found.</returns>
     private static string? TryExtractAfterFencedBlock(string text)
     {
-        var jsonBlockMatch = JsonBlockRegex().Match(text);
+        var jsonBlockMatch = JsonBlockRegex.Match(text);
         if (!jsonBlockMatch.Success)
         {
             return null;
@@ -518,12 +524,6 @@ public sealed partial class IterativeResearchService(
 
         return (inString, false, false);
     }
-
-    [GeneratedRegex(
-        @"```(?:json)?\s*(?<json>[\s\S]*?)\s*```",
-        RegexOptions.IgnoreCase | RegexOptions.ExplicitCapture | RegexOptions.NonBacktracking,
-        matchTimeoutMilliseconds: 1000)]
-    private static partial Regex JsonBlockRegex();
 
     private void LogResearchSessionStart(string query)
     {

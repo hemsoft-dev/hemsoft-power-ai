@@ -81,8 +81,8 @@ internal static partial class Program
         var spamSettings = new SpamFilterSettings();
         configuration.GetSection(SpamFilterSettings.SectionName).Bind(spamSettings);
 
-        var a2aSettings = new Configuration.A2ASettings();
-        configuration.GetSection(Configuration.A2ASettings.SectionName).Bind(a2aSettings);
+        var a2aSettings = new A2ASettings();
+        configuration.GetSection(A2ASettings.SectionName).Bind(a2aSettings);
 
         var redisSettings = new RedisSettings();
         configuration.GetSection(RedisSettings.SectionName).Bind(redisSettings);
@@ -317,7 +317,7 @@ internal static partial class Program
     }
 
     private static async Task<int> RunCoordinatorAgentAsync(
-        Configuration.A2ASettings a2aSettings,
+        A2ASettings a2aSettings,
         SpamFilterSettings spamSettings,
         TelemetrySetup telemetry,
         string? initialPrompt = null)
@@ -369,7 +369,7 @@ internal static partial class Program
     }
 
     private static async Task<AIAgent> CreateCoordinatorWithRemoteOrLocalAgent(
-        Configuration.A2ASettings a2aSettings,
+        A2ASettings a2aSettings,
         IGraphClientProvider graphClientProvider,
         SpamStorageService? spamStorage,
         CancellationToken cancellationToken)
@@ -453,7 +453,7 @@ internal static partial class Program
         string input,
         CancellationToken cancellationToken)
     {
-        AgentRunResponse? response = null;
+        AgentResponse? response = null;
 
         await AnsiConsole.Status()
             .Spinner(Spinner.Known.Dots)
@@ -474,7 +474,7 @@ internal static partial class Program
     }
 
     private static async Task<int> RunDistributedCoordinatorAsync(
-        Configuration.A2ASettings a2aSettings,
+        A2ASettings a2aSettings,
         TelemetrySetup telemetry)
     {
         using var activity = telemetry.ActivitySource.StartActivity("RunDistributedCoordinator");
@@ -580,7 +580,7 @@ internal static partial class Program
                 break;
             }
 
-            AgentRunResponse? response = null;
+            AgentResponse? response = null;
 
             await AnsiConsole.Status()
                 .Spinner(Spinner.Known.Dots)
@@ -601,7 +601,7 @@ internal static partial class Program
     }
 
     private static async Task<int> RunHostResearchAgentAsync(
-        Configuration.A2ASettings a2aSettings,
+        A2ASettings a2aSettings,
         TelemetrySetup telemetry)
     {
         using var activity = telemetry.ActivitySource.StartActivity("RunHostResearchAgent");
@@ -675,7 +675,7 @@ internal static partial class Program
 
     private static async Task<int> RunInteractiveChatAsync(
         SpamFilterSettings spamSettings,
-        Configuration.A2ASettings a2aSettings,
+        A2ASettings a2aSettings,
         RedisSettings redisSettings,
         TelemetrySetup telemetry)
     {
@@ -1247,15 +1247,22 @@ internal static partial class Program
         using var progressCts = new CancellationTokenSource();
 
         // Subscribe to progress updates in the background
-        _ = taskService.SubscribeToProgressAsync(
+        var progressTask = taskService.SubscribeToProgressAsync(
             taskId,
             progress => HandleProgressUpdate(progress, state, logService),
             progressCts.Token);
 
-        var result = await PollForResultAsync(taskService, logService, taskId, state, ctx, progressCts.Token)
-            .ConfigureAwait(false);
-
-        await progressCts.CancelAsync().ConfigureAwait(false);
+        AgentTaskResult? result;
+        try
+        {
+            result = await PollForResultAsync(taskService, logService, taskId, state, ctx, progressCts.Token)
+                .ConfigureAwait(false);
+        }
+        finally
+        {
+            await progressCts.CancelAsync().ConfigureAwait(false);
+            await progressTask.ConfigureAwait(false);
+        }
 
         if (result is not null)
         {
@@ -1509,9 +1516,9 @@ internal static partial class Program
         try
         {
             using var cts = new CancellationTokenSource(TimeSpan.FromMinutes(5));
-            var researchAgent = Agents.ResearchAgent.Create();
+            var researchAgent = ResearchAgent.Create();
 
-            AgentRunResponse? response = null;
+            AgentResponse? response = null;
             await AnsiConsole.Status()
                 .Spinner(Spinner.Known.Dots)
                 .SpinnerStyle(Style.Parse("cyan"))
@@ -1800,7 +1807,7 @@ internal static partial class Program
     /// <param name="LogService">Console log service for file-based logging.</param>
     private sealed record CommandContext(
         SpamFilterSettings SpamSettings,
-        Configuration.A2ASettings A2ASettings,
+        A2ASettings A2ASettings,
         RedisSettings RedisSettings,
         TelemetrySetup Telemetry,
         OpenRouterModelService ModelService,

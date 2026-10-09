@@ -25,8 +25,6 @@ public sealed class OpenRouterModelServiceTests : IDisposable
 
     /// <inheritdoc/>
     public void Dispose() =>
-
-        // Restore original env var
         Environment.SetEnvironmentVariable(TestEnvVar, this.originalEnvValue);
 
     /// <summary>
@@ -363,7 +361,7 @@ public sealed class OpenRouterModelServiceTests : IDisposable
             Assert.True(result);
             Assert.Equal(targetModel.Id, service.ModelId);
             Assert.NotNull(service.Info);
-            Assert.Equal(targetModel.Id, service.Info!.Id);
+            Assert.Equal(targetModel.Id, service.Info.Id);
         }
     }
 
@@ -518,8 +516,8 @@ public sealed class OpenRouterModelServiceTests : IDisposable
         };
 
         Assert.Equal(2, info.InputModalities.Count);
-        Assert.Contains("text", info.InputModalities);
-        Assert.Contains("image", info.InputModalities);
+        Assert.Contains("text", info.InputModalities, StringComparer.Ordinal);
+        Assert.Contains("image", info.InputModalities, StringComparer.Ordinal);
     }
 
     /// <summary>
@@ -537,8 +535,8 @@ public sealed class OpenRouterModelServiceTests : IDisposable
         };
 
         Assert.Equal(2, info.OutputModalities.Count);
-        Assert.Contains("text", info.OutputModalities);
-        Assert.Contains("audio", info.OutputModalities);
+        Assert.Contains("text", info.OutputModalities, StringComparer.Ordinal);
+        Assert.Contains("audio", info.OutputModalities, StringComparer.Ordinal);
     }
 
     /// <summary>

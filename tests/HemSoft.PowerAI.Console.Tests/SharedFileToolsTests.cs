@@ -288,7 +288,7 @@ public sealed class SharedFileToolsTests : IDisposable
     public void ModifyFileSystemMkdirInvalidPath()
     {
         // Arrange
-        var invalidPath = Path.Combine(this.testDir, "invalid<>:\"|?*path");
+        var invalidPath = Path.Combine(this.testDir, "invalid\0path");
 
         // Act
         var result = FileTools.ModifyFileSystem("mkdir", invalidPath);
@@ -523,7 +523,7 @@ public sealed class SharedFileToolsTests : IDisposable
         // Arrange
         var source = Path.Combine(this.testDir, "copysource.txt");
         File.WriteAllText(source, "content");
-        var invalidDest = Path.Combine(this.testDir, "invalid<>:\"|?*dest.txt");
+        var invalidDest = Path.Combine(this.testDir, "invalid\0dest.txt");
 
         // Act
         var result = FileTools.ModifyFileSystem("copy", source, invalidDest);
@@ -610,7 +610,7 @@ public sealed class SharedFileToolsTests : IDisposable
     public void ModifyFileSystemWriteInvalidPath()
     {
         // Arrange
-        var invalidPath = Path.Combine(this.testDir, "invalid<>:\"|?*file.txt");
+        var invalidPath = Path.Combine(this.testDir, "invalid\0file.txt");
 
         // Act
         var result = FileTools.ModifyFileSystem("write", invalidPath, "content");
